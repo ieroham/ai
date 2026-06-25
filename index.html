@@ -2,426 +2,81 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <title>چت هوش مصنوعی</title>
 <meta name="theme-color" content="#030617">
 <style>
-:root{
-  --bg:#030617;
-  --glass:rgba(255,255,255,0.06);
-  --glass-2:rgba(255,255,255,0.08);
-  --border:rgba(255,255,255,0.12);
-  --text:#e8eaf0;
-  --muted:#9aa3b2;
-  --p1:#7c3aed;
-  --p2:#3b82f6;
-  --danger:#ef4444;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{
-  font-family: Vazirmatn, "IRANSansX", "Segoe UI", Tahoma, sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  overflow:hidden;
-  -webkit-tap-highlight-color:transparent;
-}
-.bg{
-  position:fixed;inset:0;z-index:-2;
-  background: radial-gradient(1200px 800px at 80% -10%, rgba(124,58,237,0.15), transparent),
-              radial-gradient(1000px 600px at -10% 110%, rgba(59,130,246,0.15), transparent),
-              #030617;
-}
-.bg::before,.bg::after{
-  content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.6;
-}
-.bg::before{width:420px;height:420px;top:-120px;right:-80px;background:radial-gradient(circle, rgba(124,58,237,.8), transparent 60%);}
-.bg::after{width:380px;height:380px;bottom:-120px;left:-80px;background:radial-gradient(circle, rgba(59,130,246,.8), transparent 60%);}
-
-.app{
-  height:100dvh;max-width:920px;margin:0 auto;display:flex;flex-direction:column;
-}
-
-header{
-  position:sticky;top:0;z-index:10;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 18px;
-  background:rgba(7,10,20,0.7);
-  backdrop-filter:blur(20px) saturate(140%);
-  border-bottom:1px solid var(--border);
-}
-.title{display:flex;align-items:center;gap:12px}
-.logo{
-  width:40px;height:40px;border-radius:14px;
-  background:linear-gradient(135deg,var(--p1),var(--p2));
-  display:grid;place-items:center;box-shadow:0 8px 24px rgba(124,58,237,.35), inset 0 0 20px rgba(255,255,255,.15);
-}
-.logo svg{filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
-h1{font-size:18px;font-weight:700;letter-spacing:-.2px}
-header p{font-size:12px;color:var(--muted);margin-top:2px}
-
-.actions{display:flex;gap:8px}
-.icon-btn{
-  height:36px;padding:0 12px;display:flex;align-items:center;gap:6px;
-  background:var(--glass);border:1px solid var(--border);color:var(--text);
-  border-radius:12px;cursor:pointer;backdrop-filter:blur(12px);
-  transition:.2s;font-size:13px;
-}
-.icon-btn:hover{background:var(--glass-2);transform:translateY(-1px)}
-.icon-btn:active{transform:translateY(0)}
-.icon-btn svg{opacity:.9}
-
-.chat{
-  flex:1;overflow-y:auto;overflow-x:hidden;padding:22px 16px 24px;
-  scroll-behavior:smooth;
-}
-.chat::-webkit-scrollbar{width:8px}
-.chat::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:8px}
-
-.msg{display:flex;margin:14px 0;animation:fade.35s ease}
-.msg.user{justify-content:flex-end}
-.msg.ai{justify-content:flex-start}
-.bubble{
-  max-width:min(78%,680px);padding:14px 16px;line-height:1.9;font-size:15px;
-  position:relative;word-wrap:break-word;white-space:pre-wrap;
-}
-.msg.user.bubble{
-  background:linear-gradient(135deg,var(--p1),var(--p2));
-  color:white;border-radius:20px 20px 6px 20px;
-  box-shadow:0 10px 30px rgba(124,58,237,.25), 0 2px 8px rgba(59,130,246,.2);
-}
-.msg.ai.bubble{
-  background:var(--glass);border:1px solid var(--border);
-  backdrop-filter:blur(16px) saturate(130%);
-  border-radius:20px 20px 20px 6px;
-  box-shadow:0 4px 20px rgba(0,0,0,.25);
-}
-
-.bubble-content{min-height:1.5em}
-.bubble-actions{margin-top:10px;display:flex;gap:8px;opacity:0;transition:.2s}
-.msg.ai.bubble:hover.bubble-actions{opacity:1}
-.mini-copy{
-  display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);
-  background:rgba(255,255,255,.04);border:1px solid var(--border);
-  padding:5px 9px;border-radius:8px;cursor:pointer;transition:.2s
-}
-.mini-copy:hover{color:var(--text);background:rgba(255,255,255,.08)}
-
-.typing{display:flex;gap:4px;align-items:center;height:22px;padding:4px 2px}
-.typing span{width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#60a5fa);animation:bounce 1.3s infinite}
-.typing span:nth-child(2){animation-delay:.15s}
-.typing span:nth-child(3){animation-delay:.3s}
-@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.6}30%{transform:translateY(-6px);opacity:1}}
-@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-.input-area{
-  position:sticky;bottom:0;padding:14px 14px 18px;
-  background:linear-gradient(to top, rgba(3,6,23,.95) 60%, rgba(3,6,23,0));
-  backdrop-filter:blur(10px);
-}
-.input-wrap{
-  display:flex;align-items:flex-end;gap:10px;
-  background:rgba(15,19,35,.85);border:1px solid var(--border);
-  padding:8px 8px 8px 12px;border-radius:24px;
-  box-shadow:0 8px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05);
-  backdrop-filter:blur(16px);
-  transition:.2s;
-}
-.input-wrap:focus-within{border-color:rgba(124,58,237,.6);box-shadow:0 0 0 3px rgba(124,58,237,.15), 0 8px 30px rgba(0,0,0,.35)}
-textarea{
-  flex:1;background:transparent;border:0;outline:0;color:var(--text);
-  font-size:16px;line-height:1.7;max-height:160px;min-height:24px;resize:none;
-  padding:8px 4px;font-family:inherit;
-}
-textarea::placeholder{color:#7c8496}
-.send-btn{
-  width:42px;height:42px;min-width:42px;border-radius:50%;border:0;cursor:pointer;
-  background:linear-gradient(135deg,var(--p1),var(--p2));color:white;
-  display:grid;place-items:center;transition:.2s;box-shadow:0 8px 20px rgba(124,58,237,.35);
-}
-.send-btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;filter:grayscale(.3)}
-.send-btn:not(:disabled):hover{transform:translateY(-1px) scale(1.02)}
-.send-btn:not(:disabled):active{transform:translateY(0) scale(.98)}
-.send-btn svg{transform:scaleX(-1)}
-.hint{font-size:11.5px;color:#6b7280;text-align:center;margin-top:8px}
-
-.toast{
-  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:rgba(20,24,40,.9);border:1px solid var(--border);color:var(--text);
-  padding:10px 16px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;
-  backdrop-filter:blur(12px);transition:.3s;z-index:50;white-space:nowrap;
-  box-shadow:0 10px 30px rgba(0,0,0,.4);
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-.welcome{
-  margin:30px auto;max-width:600px;text-align:center;padding:24px;
-  background:var(--glass);border:1px solid var(--border);border-radius:24px;
-  backdrop-filter:blur(16px);
-}
-.welcome h2{font-size:20px;margin-bottom:8px;background:linear-gradient(135deg,#c4b5fd,#93c5fd);-webkit-background-clip:text;background-clip:text;color:transparent}
-.welcome p{color:var(--muted);font-size:14px;line-height:1.8}
-
-@media (max-width:640px){
-  header{padding:12px 14px}
-  h1{font-size:17px}
- .logo{width:36px;height:36px;border-radius:12px}
- .actions.icon-btn span{display:none}
- .icon-btn{width:36px;padding:0;justify-content:center}
- .chat{padding:16px 12px}
- .bubble{max-width:88%;font-size:14.5px;padding:12px 14px}
- .welcome{margin:16px 8px;padding:18px}
- .hint{display:none}
- .input-area{padding:10px 10px 14px}
- .bubble-actions{opacity:1}
-}
+:root{--bg:#030617;--glass:rgba(255,255,255,0.06);--glass-2:rgba(255,255,255,0.08);--border:rgba(255,255,255,0.12);--text:#e8eaf0;--muted:#9aa3b2;--p1:#7c3aed;--p2:#3b82f6}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+body{font-family:Vazirmatn,"IRANSansX",Tahoma,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;-webkit-tap-highlight-color:transparent}
+.bg{position:fixed;inset:0;z-index:-2;background:radial-gradient(1200px 800px at 80% -10%,rgba(124,58,237,.15),transparent),radial-gradient(1000px 600px at -10% 110%,rgba(59,130,246,.15),transparent),#030617}
+.bg::before,.bg::after{content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.6}
+.bg::before{width:420px;height:420px;top:-120px;right:-80px;background:radial-gradient(circle,rgba(124,58,237,.8),transparent 60%)}
+.bg::after{width:380px;height:380px;bottom:-120px;left:-80px;background:radial-gradient(circle,rgba(59,130,246,.8),transparent 60%)}
+.app{height:100dvh;max-width:920px;margin:0 auto;display:flex;flex-direction:column}
+header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(7,10,20,.7);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.title{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,var(--p1),var(--p2));display:grid;place-items:center}
+h1{font-size:18px;font-weight:700}header p{font-size:12px;color:var(--muted);margin-top:2px}
+.actions{display:flex;gap:8px}.icon-btn{height:36px;padding:0 12px;display:flex;align-items:center;gap:6px;background:var(--glass);border:1px solid var(--border);color:var(--text);border-radius:12px;cursor:pointer}
+.chat{flex:1;overflow-y:auto;padding:22px 16px;scroll-behavior:smooth}
+.msg{display:flex;margin:14px 0;animation:fade.3s}.msg.user{justify-content:flex-end}.msg.ai{justify-content:flex-start}
+.bubble{max-width:min(78%,680px);padding:14px 16px;line-height:1.9;font-size:15px;white-space:pre-wrap;word-wrap:break-word}
+.msg.user.bubble{background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;border-radius:20px 20px 6px 20px}
+.msg.ai.bubble{background:var(--glass);border:1px solid var(--border);backdrop-filter:blur(16px);border-radius:20px 20px 20px 6px}
+.bubble-content{min-height:1.5em}.bubble-actions{margin-top:8px;opacity:0;transition:.2s}.msg.ai.bubble:hover.bubble-actions{opacity:1}
+.mini-copy{font-size:12px;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--border);padding:4px 8px;border-radius:8px;cursor:pointer}
+.typing{display:flex;gap:4px;height:20px}.typing span{width:6px;height:6px;border-radius:50%;background:#a78bfa;animation:b.9s infinite}.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+.input-area{position:sticky;bottom:0;padding:14px;background:linear-gradient(to top,rgba(3,6,23,.95),transparent)}
+.input-wrap{display:flex;gap:10px;background:rgba(15,19,35,.9);border:1px solid var(--border);padding:8px 12px;border-radius:24px}
+textarea{flex:1;background:transparent;border:0;outline:0;color:var(--text);font-size:16px;resize:none;max-height:150px}
+.send-btn{width:42px;height:42px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;display:grid;place-items:center;cursor:pointer}
+.send-btn:disabled{opacity:.5}.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(20,24,40,.9);padding:8px 14px;border-radius:10px;opacity:0;transition:.3s}.toast.show{opacity:1}
+.welcome{margin:30px auto;text-align:center;padding:20px;background:var(--glass);border:1px solid var(--border);border-radius:20px}
 </style>
 </head>
 <body>
 <div class="bg"></div>
 <div class="app">
-  <header>
-    <div class="title">
-      <div class="logo">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2l2.4 4.8 5.3.8-3.8 3.7.9 5.2-4.8-2.5-4.8 2.5.9-5.2-3.8-3.7 5.3-.8L12 2z" fill="white" opacity="0.95"/>
-        </svg>
-      </div>
-      <div>
-        <h1>چت هوش مصنوعی</h1>
-        <p>مدل: Auto</p>
-      </div>
-    <div class="actions">
-      <button id="copyBtn" class="icon-btn" title="کپی آخرین پاسخ">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><rect x="2" y="2" width="13" height="13" rx="2"/></svg>
-        <span>کپی پاسخ</span>
-      </button>
-      <button id="clearBtn" class="icon-btn" title="پاک کردن گفتگو">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-        <span>پاک کردن</span>
-      </button>
-    </div>
-  </header>
-
-  <main id="chat" class="chat">
-    <div class="welcome">
-      <h2>سلام! 👋</h2>
-      <p>من دستیار هوش مصنوعی فارسی شما هستم. هر سوالی داری بپرس؛ از خلاصه‌سازی و نوشتن متن تا ایده‌پردازی و کدنویسی.</p>
-    </div>
-  </main>
-
-  <footer class="input-area">
-    <div class="input-wrap">
-      <textarea id="input" placeholder="پیام خود را بنویسید..." rows="1" enterkeyhint="send"></textarea>
-      <button id="send" class=\"send-btn\" disabled aria-label="ارسال">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 2L11 13"/>
-          <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
-        </svg>
-      </button>
-    </div>
-    <div class="hint">Enter برای ارسال • Shift+Enter برای خط جدید</div>
-  </footer>
+<header><div class="title"><div class="logo">✨</div><div><h1>چت هوش مصنوعی</h1><p>مدل: Auto</p></div></div>
+<div class="actions"><button id="copyBtn" class="icon-btn">کپی</button><button id="clearBtn" class="icon-btn">پاک</button></div></header>
+<main id="chat" class="chat"><div class="welcome"><h2>سلام! 👋</h2><p>بپرس، من با مدل Auto جواب میدم.</p></div></main>
+<footer class="input-area"><div class="input-wrap"><textarea id="input" placeholder="بنویس..." rows="1"></textarea><button id="send" class="send-btn" disabled>➤</button></div></footer>
 </div>
-
 <div id="toast" class="toast"></div>
-
 <script>
-const chat = document.getElementById('chat');
-const input = document.getElementById('input');
-const sendBtn = document.getElementById('send');
-const clearBtn = document.getElementById('clearBtn');
-const copyBtn = document.getElementById('copyBtn');
-const toast = document.getElementById('toast');
+const chat=document.getElementById('chat'),input=document.getElementById('input'),sendBtn=document.getElementById('send');
+const TARGET='https://freellmapi-production-3240.up.railway.app/v1/chat/completions';
+const API_URL='https://corsproxy.io/?'+encodeURIComponent(TARGET);
+const API_KEY='freellmapi-5844744d1b29b5e5141f4416bbb7e476c271fc8b2886489d';
+let conversation=[{role:'system',content:'You are a helpful Persian assistant. Answer concisely in Persian.'}];
+let streaming=false;
+const toast=(m)=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)};
 
-const API_URL = 'https://freellmapi-production-3240.up.railway.app/v1/chat/completions';
-const API_KEY = 'freellmapi-5844744d1b29b5e5141f4416bbb7e476c271fc8b2886489d';
+function msg(role,text=''){const w=document.createElement('div');w.className='msg '+role;const b=document.createElement('div');b.className='bubble';
+if(role==='ai'){const c=document.createElement('div');c.className='bubble-content';c.textContent=text;b.appendChild(c);w._c=c;const a=document.createElement('div');a.className='bubble-actions';const cp=document.createElement('button');cp.className='mini-copy';cp.textContent='کپی';cp.onclick=()=>navigator.clipboard.writeText(c.textContent).then(()=>toast('کپی شد'));a.appendChild(cp);b.appendChild(a)}else{b.textContent=text}
+w.appendChild(b);chat.appendChild(w);chat.scrollTop=chat.scrollHeight;return w}
 
-let conversation = [
-  { role: 'system', content: 'You are a helpful Persian AI assistant. Always respond in clear, natural Persian (Farsi) unless the user asks for another language. Be concise, accurate, and friendly.' }
-];
+function typing(w){const t=document.createElement('div');t.className='typing';t.innerHTML='<span></span><span></span>';w._c.appendChild(t);w._t=t}
 
-let isStreaming = false;
-
-function showToast(msg){
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(()=> toast.classList.remove('show'), 2000);
+async function send(){
+ const txt=input.value.trim();if(!txt||streaming)return;
+ document.querySelector('.welcome')?.remove();msg('user',txt);conversation.push({role:'user',content:txt});
+ input.value='';sendBtn.disabled=true;streaming=true;const aw=msg('ai','');typing(aw);
+ try{
+  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+API_KEY},body:JSON.stringify({model:'auto',messages:conversation,stream:true,temperature:0.7})});
+  if(!r.ok)throw new Error();const rd=r.body.getReader();const dec=new TextDecoder();let buf='',out='',first=true;
+  while(true){const {done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();
+   for(const l of lines){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(d==='[DONE]')continue;try{const j=JSON.parse(d);const delta=j.choices?.[0]?.delta?.content||'';if(delta){if(first){aw._t?.remove();first=false}out+=delta;aw._c.textContent=out;chat.scrollTop=chat.scrollHeight}}catch{}}}
+  conversation.push({role:'assistant',content:out});
+ }catch(e){aw._t?.remove();aw._c.textContent='خطا در اتصال. پراکسی را چک کن.';aw._c.style.color='#f88'}
+ finally{streaming=false;sendBtn.disabled=!input.value.trim();input.focus()}
 }
-
-function scrollBottom(){
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function autoResize(){
-  input.style.height = 'auto';
-  input.style.height = Math.min(input.scrollHeight, 160) + 'px';
-}
-
-function createMessage(role, text=''){
-  const wrap = document.createElement('div');
-  wrap.className = `msg ${role}`;
-  const bubble = document.createElement('div');
-  bubble.className = 'bubble';
-
-  if(role === 'ai'){
-    const content = document.createElement('div');
-    content.className = 'bubble-content';
-    content.textContent = text;
-    bubble.appendChild(content);
-
-    const actions = document.createElement('div');
-    actions.className = 'bubble-actions';
-    const copy = document.createElement('button');
-    copy.className = 'mini-copy';
-    copy.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><rect x="2" y="2" width="13" height="13" rx="2"/></svg>کپی`;
-    copy.onclick = () => {
-      navigator.clipboard.writeText(content.textContent).then(()=> showToast('کپی شد'));
-    };
-    actions.appendChild(copy);
-    bubble.appendChild(actions);
-    wrap._content = content;
-    wrap._copy = copy;
-  } else {
-    bubble.textContent = text;
-  }
-
-  wrap.appendChild(bubble);
-  chat.appendChild(wrap);
-  scrollBottom();
-  return wrap;
-}
-
-function addTyping(wrap){
-  const typing = document.createElement('div');
-  typing.className = 'typing';
-  typing.innerHTML = '<span></span><span></span><span></span>';
-  wrap._content.appendChild(typing);
-  wrap._typing = typing;
-}
-
-async function sendMessage(){
-  const text = input.value.trim();
-  if(!text || isStreaming) return;
-
-  document.querySelector('.welcome')?.remove();
-
-  createMessage('user', text);
-  conversation.push({ role: 'user', content: text });
-
-  input.value = '';
-  autoResize();
-  sendBtn.disabled = true;
-  isStreaming = true;
-
-  const aiWrap = createMessage('ai', '');
-  addTyping(aiWrap);
-
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'auto',
-        messages: conversation,
-        stream: true,
-        temperature: 0.7
-      })
-    });
-
-    if(!response.ok ||!response.body) throw new Error('Network');
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder('utf-8');
-    let buffer = '';
-    let fullText = '';
-    let firstChunk = true;
-
-    while(true){
-      const { done, value } = await reader.read();
-      if(done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || '';
-
-      for(const line of lines){
-        const l = line.trim();
-        if(!l.startsWith('data:')) continue;
-        const data = l.slice(5).trim();
-        if(data === '[DONE]') continue;
-
-        try{
-          const json = JSON.parse(data);
-          const delta = json.choices?.[0]?.delta?.content || '';
-          if(delta){
-            if(firstChunk){
-              aiWrap._typing?.remove();
-              firstChunk = false;
-            }
-            fullText += delta;
-            aiWrap._content.textContent = fullText;
-            scrollBottom();
-          }
-        }catch{}
-      }
-    }
-
-    if(firstChunk){
-      aiWrap._typing?.remove();
-      aiWrap._content.textContent = 'پاسخی دریافت نشد.';
-    }
-
-    conversation.push({ role: 'assistant', content: fullText });
-
-  } catch(err){
-    aiWrap._typing?.remove();
-    aiWrap._content.textContent = 'خطا در اتصال به سرور. لطفاً دوباره تلاش کنید.';
-    aiWrap._content.style.color = '#fda4a4';
-  } finally {
-    isStreaming = false;
-    sendBtn.disabled = input.value.trim().length === 0;
-    input.focus();
-  }
-}
-
-input.addEventListener('input', ()=>{
-  autoResize();
-  sendBtn.disabled = input.value.trim().length === 0 || isStreaming;
-});
-
-input.addEventListener('keydown', (e)=>{
-  if(e.key === 'Enter' &&!e.shiftKey){
-    e.preventDefault();
-    sendMessage();
-  }
-});
-
-sendBtn.addEventListener('click', sendMessage);
-
-clearBtn.addEventListener('click', ()=>{
-  conversation = conversation.slice(0,1);
-  chat.innerHTML = `<div class="welcome"><h2>گفتگوی جدید</h2><p>پیام خود را بنویسید تا شروع کنیم.</p></div>`;
-  showToast('گفتگو پاک شد');
-  input.focus();
-});
-
-copyBtn.addEventListener('click', ()=>{
-  const last = [...conversation].reverse().find(m=>m.role==='assistant');
-  if(last && last.content){
-    navigator.clipboard.writeText(last.content).then(()=> showToast('آخرین پاسخ کپی شد'));
-  } else {
-    showToast('پاسخی برای کپی وجود ندارد');
-  }
-});
-
-window.addEventListener('load', ()=>{
-  input.focus();
-  autoResize();
-});
+input.oninput=()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,150)+'px';sendBtn.disabled=!input.value.trim()||streaming};
+input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}};
+sendBtn.onclick=send;
+document.getElementById('clearBtn').onclick=()=>{conversation=conversation.slice(0,1);chat.innerHTML='<div class="welcome"><h2>گفتگوی جدید</h2></div>';toast('پاک شد')};
+document.getElementById('copyBtn').onclick=()=>{const last=[...conversation].reverse().find(m=>m.role==='assistant');if(last)navigator.clipboard.writeText(last.content).then(()=>toast('کپی شد'))};
 </script>
 </body>
 </html>
