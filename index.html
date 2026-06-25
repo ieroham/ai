@@ -2,80 +2,70 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>چت FreeLLM</title>
 <style>
-  body{margin:0;font-family:Tahoma,sans-serif;background:#0f172a;color:#e2e8f0;display:flex;flex-direction:column;height:100vh}
-  header{padding:1rem;background:#1e293b;text-align:center;font-size:1.1rem;font-weight:bold}
-  #chat{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.8rem}
- .msg{max-width:85%;padding:0.8rem 1rem;border-radius:12px;line-height:1.7;white-space:pre-wrap}
- .user{background:#2563eb;color:#fff;align-self:flex-start}
- .bot{background:#334155;align-self:flex-end}
-  #input{display:flex;gap:0.5rem;padding:1rem;background:#1e293b}
-  #text{flex:1;padding:0.8rem;border:none;border-radius:10px;background:#0f172a;color:#fff;font-size:1rem}
-  button{padding:0.8rem 1.2rem;border:none;border-radius:10px;background:#2563eb;color:#fff;cursor:pointer;font-size:1rem}
-  button:disabled{opacity:0.6}
+body{margin:0;height:100vh;display:flex;flex-direction:column;background:#0f172a;color:#e2e8f0;font-family:system-ui,Tahoma,sans-serif}
+header{padding:14px;background:#1e293b;text-align:center;font-weight:700;font-size:18px}
+#chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:85%;padding:10px 14px;border-radius:12px;white-space:pre-wrap;line-height:1.7}
+.user{align-self:flex-end;background:#2563eb;color:#fff;border-bottom-left-radius:4px}
+.bot{align-self:flex-start;background:#334155;border-bottom-right-radius:4px}
+footer{display:flex;gap:8px;padding:12px;background:#1e293b}
+#message{flex:1;padding:12px;border:none;border-radius:10px;background:#0f172a;color:#e2e8f0;outline:none}
+#send{padding:12px 20px;border:none;border-radius:10px;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
+#send:disabled{opacity:.6}
 </style>
 </head>
 <body>
-<header>FreeLLM API - مدل auto</header>
+<header>چت با FreeLLM API</header>
 <div id="chat"></div>
-<div id="input">
-  <input id="text" placeholder="پیامت رو بنویس..." autocomplete="off">
-  <button id="sendBtn" onclick="send()">ارسال</button>
-</div>
-
+<footer>
+<input id="message" placeholder="پیام خود را بنویسید..." autocomplete="off">
+<button id="send">ارسال</button>
+</footer>
 <script>
-const chat = document.getElementById('chat');
-const input = document.getElementById('text');
-const btn = document.getElementById('sendBtn');
+const chat=document.getElementById('chat');
+const input=document.getElementById('message');
+const btn=document.getElementById('send');
+
+function addMsg(t,c){
+  const d=document.createElement('div');
+  d.className='msg '+c;
+  d.textContent=t;
+  chat.appendChild(d);
+  chat.scrollTop=chat.scrollHeight;
+}
 
 async function send(){
-  const text = input.value.trim();
+  const text=input.value.trim();
   if(!text) return;
-
-  addMsg(text, 'user');
-  input.value = '';
-  btn.disabled = true;
-
-  const thinking = addMsg('در حال پاسخ...', 'bot');
-
-  try {
-    const res = await fetch('/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer freellmapi-5844744d1b29b5e5141f4416bbb7e476c271fc8b2886489d'
+  addMsg(text,'user');
+  input.value='';
+  btn.disabled=true;
+  try{
+    const res=await fetch('/v1/chat/completions',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer freellmapi-5844744d1b29b5e5141f4416bbb7e476c271fc8b2886489d'
       },
-      body: JSON.stringify({
-        model: "auto",
-        messages: [{ role: "user", content: text }]
+      body:JSON.stringify({
+        model:"auto",
+        messages:[{role:"user",content:text}]
       })
     });
-
-    const data = await res.json();
-    thinking.remove();
-
-    const reply = data.choices?.[0]?.message?.content || 'پاسخی نگرفتم';
-    addMsg(reply, 'bot');
-  } catch(err) {
-    thinking.remove();
-    addMsg('خطا: ' + err.message, 'bot');
-  } finally {
-    btn.disabled = false;
+    const data=await res.json();
+    const reply=data.choices?.[0]?.message?.content||'پاسخی دریافت نشد';
+    addMsg(reply,'bot');
+  }catch(e){
+    addMsg('خطا: '+e.message,'bot');
   }
+  btn.disabled=false;
+  input.focus();
 }
-
-function addMsg(t, cls){
-  const d = document.createElement('div');
-  d.className = 'msg ' + cls;
-  d.textContent = t;
-  chat.appendChild(d);
-  chat.scrollTop = chat.scrollHeight;
-  return d;
-}
-
-input.addEventListener('keydown', e => { if(e.key === 'Enter') send(); });
+btn.onclick=send;
+input.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
 </script>
 </body>
 </html>
