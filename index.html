@@ -1,63 +1,178 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>دستیار هوشمند</title>
 <style>
-:root{--bg:#0a0f1f;--bg2:#111936;--text:#e6e9f2;--muted:#9aa3b2;--glass:rgba(255,255,255,.06);--accent1:#7c3aed;--accent2:#3b82f6;--bubble-user:linear-gradient(135deg,var(--accent1),var(--accent2));--border:rgba(255,255,255,.1);--shadow:0 10px 30px rgba(0,0,0,.35)}
-@media (prefers-color-scheme:light){:root{--bg:#f6f7fb;--bg2:#ffffff;--text:#0b1020;--muted:#5b6475;--glass:rgba(255,255,255,.7);--border:rgba(0,0,0,.08);--shadow:0 10px 30px rgba(16,24,40,.08)}}
-*{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:system-ui,Vazirmatn,sans-serif;background:radial-gradient(1200px 800px at 80% -10%,rgba(124,58,237,.25),transparent),radial-gradient(1000px 600px at -10% 110%,rgba(59,130,246,.2),transparent),var(--bg);color:var(--text);display:flex;flex-direction:column}
-header{position:sticky;top:0;z-index:10;background:linear-gradient(to bottom,rgba(0,0,0,.25),transparent),var(--bg2);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-.bar{max-width:900px;margin:auto;padding:14px 16px;display:flex;align-items:center;gap:10px}
-.logo{width:32px;height:32px;border-radius:10px;background:var(--bubble-user);display:grid;place-items:center;box-shadow:var(--shadow)}
-.logo svg{width:18px;height:18px;fill:white}
-.title{font-weight:700;font-size:16px}
-main{flex:1;overflow:auto}
-.chat{max-width:900px;margin:auto;padding:18px 12px 100px;display:flex;flex-direction:column;gap:12px}
-.bubble{max-width:85%;padding:12px 14px;border-radius:18px;border:1px solid var(--border);box-shadow:var(--shadow);animation:fade.25s ease;background:var(--glass);backdrop-filter:blur(10px)}
-.bubble.user{margin-right:auto;background:var(--bubble-user);color:white;border:none}
-.bubble.ai{margin-left:auto}
-.meta{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px;color:var(--muted)}
-.avatar{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.2);font-size:13px}
-.user.meta{justify-content:flex-end;color:rgba(255,255,255,.85)}
-.text{white-space:pre-wrap;line-height:1.8;font-size:15px}
-.empty{margin:20vh auto;text-align:center;color:var(--muted)}
-.empty.hint{margin-top:8px;font-size:13px}
-.typing{display:inline-flex;gap:4px}
-.typing span{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.6;animation:bounce 1.2s infinite}
-.typing span:nth-child(2){animation-delay:.15s}
-.typing span:nth-child(3){animation-delay:.3s}
-footer{position:fixed;bottom:0;inset-inline:0;background:linear-gradient(to top,var(--bg),transparent);padding:12px}
-.composer{max-width:900px;margin:auto;display:flex;gap:8px;align-items:flex-end;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:8px;box-shadow:var(--shadow);backdrop-filter:blur(12px)}
-textarea{flex:1;background:transparent;border:0;outline:0;color:var(--text);resize:none;max-height:160px;min-height:44px;padding:10px 8px;font:inherit;line-height:1.7}
-.btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--border);background:var(--glass);display:grid;place-items:center;cursor:pointer;transition:.2s}
+:root{
+  --bg:#0a0a0f;--bg2:#12121c;--text:#e9e9f1;--muted:#9aa0b4;
+  --glass:rgba(255,255,255,.06);--border:rgba(255,255,255,.12);
+  --accent1:#7c3aed;--accent2:#3b82f6;--shadow:0 10px 30px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme:light){
+  :root{--bg:#f6f7fb;--bg2:#ffffff;--text:#10121a;--muted:#5f6475;--glass:rgba(255,255,255,.7);--border:rgba(0,0,0,.08);--shadow:0 10px 30px rgba(17,24,39,.08)}
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:system-ui,Vazirmatn,sans-serif;background:radial-gradient(1200px 800px at 80% -10%,rgba(124,58,237,.25),transparent 60%),radial-gradient(1000px 600px at -10% 110%,rgba(59,130,246,.22),transparent 60%),var(--bg);color:var(--text)}
+.app{display:flex;flex-direction:column;height:100dvh;max-width:820px;margin:0 auto}
+header{position:sticky;top:0;z-index:10;backdrop-filter:blur(14px);background:linear-gradient(to bottom,rgba(10,10,15,.8),rgba(10,10,15,.35));border-bottom:1px solid var(--border)}
+@media (prefers-color-scheme:light){header{background:linear-gradient(to bottom,rgba(246,247,251,.85),rgba(246,247,251,.5))}}
+.head-inner{display:flex;align-items:center;gap:.75rem;padding:.9rem 1rem}
+.logo{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:grid;place-items:center;box-shadow:var(--shadow)}
+.logo svg{width:20px;height:20px;fill:white}
+.title{font-weight:700;font-size:1.05rem;letter-spacing:-.2px}
+.spacer{flex:1}
+.btn{border:1px solid var(--border);background:var(--glass);color:var(--text);padding:.55rem.8rem;border-radius:12px;cursor:pointer;backdrop-filter:blur(10px);transition:.2s;font-size:.9rem}
 .btn:hover{transform:translateY(-1px)}
-.btn.send{background:var(--bubble-user);border:none;color:white}
-.btn svg{width:20px;height:20px}
+main{flex:1;overflow-y:auto;padding:1rem.9rem 1.2rem;scroll-behavior:smooth}
+.empty{height:100%;display:grid;place-items:center;text-align:center;color:var(--muted);padding:2rem}
+.empty.orb{width:86px;height:86px;border-radius:28px;background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(59,130,246,.3));display:grid;place-items:center;margin:0 auto 1rem;border:1px solid var(--border);backdrop-filter:blur(8px)}
+.empty h2{margin:.2rem 0.4rem;color:var(--text);font-size:1.15rem}
+.bubbles{display:flex;flex-direction:column;gap:.85rem}
+.msg{display:flex;gap:.55rem;align-items:flex-end;animation:fade.3s ease}
+.msg.user{justify-content:flex-end}
+.avatar{width:28px;height:28px;border-radius:50%;flex:0 0 28px;display:grid;place-items:center;background:var(--glass);border:1px solid var(--border);font-size:.8rem}
+.msg.user.avatar{order:2;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:white;border:none}
+.bubble{max-width:min(78%,560px);padding:.75rem.9rem;border-radius:18px;background:var(--glass);border:1px solid var(--border);backdrop-filter:blur(12px);box-shadow:var(--shadow);position:relative}
+.msg.user.bubble{background:linear-gradient(135deg,var(--accent1),var(--accent2));color:white;border:none;border-bottom-right-radius:6px}
+.msg.ai.bubble{border-bottom-left-radius:6px}
+.text{white-space:pre-wrap;line-height:1.75;font-size:.98rem;word-break:break-word}
+.time{display:block;margin-top:.35rem;font-size:.72rem;opacity:.7}
+.msg.user.time{color:rgba(255,255,255,.85)}
+.typing{display:inline-flex;gap:4px;align-items:center}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.6;animation:bounce 1.2s infinite}
+.dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-4px);opacity:1}}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-5px);opacity:1}}
-@media (min-width:700px){.bubble{max-width:70%}}
+footer{position:sticky;bottom:0;padding:.8rem;background:linear-gradient(to top,rgba(10,10,15,.9),rgba(10,10,15,.4));backdrop-filter:blur(14px);border-top:1px solid var(--border)}
+@media (prefers-color-scheme:light){footer{background:linear-gradient(to top,rgba(246,247,251,.9),rgba(246,247,251,.5))}}
+.input-wrap{display:flex;align-items:flex-end;gap:.6rem;background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:.55rem.6rem;box-shadow:var(--shadow)}
+textarea{flex:1;background:transparent;border:none;outline:none;color:var(--text);resize:none;max-height:160px;min-height:24px;font:inherit;line-height:1.7;padding:.3rem.4rem}
+.send{width:40px;height:40px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:grid;place-items:center;box-shadow:var(--shadow);transition:.15s}
+.send:active{transform:scale(.96)}
+.send svg{width:20px;height:20px;fill:white}
+.hint{color:var(--muted);font-size:.75rem;margin:.5rem.3rem 0}
+.error{border-color:#ef4444!important}
 </style>
 </head>
 <body>
-<header><div class="bar"><div class="logo"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-7.07 17.07A10 10 0 1 0 12 2Zm0 3a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/></svg></div><div class="title">دستیار هوشمند</div></div></header>
-<main><div id="chat" class="chat"><div class="empty" id="empty"><div>سلام! چی کمکت کنم؟</div><div class="hint">پیامت رو بنویس و Enter بزن — Shift+Enter برای خط جدید</div></div></div></main>
-<footer><div class="composer"><button class="btn" id="clear" title="پاک کردن"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2m-1 0v14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6h10z"/></svg></button><textarea id="input" placeholder="بنویس..." autofocus></textarea><button class="btn send" id="send" title="ارسال"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg></button></div></footer>
+<div class="app">
+  <header>
+    <div class="head-inner">
+      <div class="logo"><svg viewBox="0 0 24 24"><path d="M12 2a1 1 0 0 1 1 1v1.07a7.002 7.002 0 0 1 5.93 5.93H20a1 1 0 1 1 0 2h-1.07A7.002 0 0 1 13 17.93V19a1 1 0 1 1-2 0v-1.07A7.002 0 0 1 5.07 12H4a1 1 0 1 1 0-2h1.07A7.002 0 0 1 11 4.07V3a1 1 0 0 1 1-1zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"/></svg></div>
+      <div class="title">دستیار هوشمند</div>
+      <div class="spacer"></div>
+      <button class="btn" id="clearBtn" title="پاک کردن گفتگو">پاک کردن</button>
+    </div>
+  </header>
+  <main id="chat">
+    <div class="empty" id="empty">
+      <div>
+        <div class="orb"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c4.5 0 8 3.5 8 7.5 0 2.3-1.1 4.3-2.8 5.7-.4.3-.6.8-.5 1.3l.3 1.5c.1.5-.3.9-.8.8l-1.7-.4c-.4-.1-.9 0-1.2.3A7.9 7.9 0 0 1 12 21C7.5 21 4 17.5 4 13.5S7.5 3 12 3z"/></svg></div>
+        <h2>سلام! چی کمکت کنم؟</h2>
+        <p>هر سوالی داری بپرس، من اینجام.</p>
+      </div>
+    </div>
+    <div class="bubbles" id="bubbles"></div>
+  </main>
+  <footer>
+    <div class="input-wrap" id="wrap">
+      <textarea id="input" placeholder="پیامت رو بنویس..." rows="1" autofocus></textarea>
+      <button class="send" id="sendBtn" aria-label="ارسال">
+        <svg viewBox="0 0 24 24"><path d="M3.4 20.6 21 12 3.4 3.4c-.5-.2-1.1-1.6v4.2c0.3.2.6.5.7L13 12 2.9 14.1c-.3.1-.5.4-.5.7v4.2c0.5.5.8 1.6z"/></svg>
+      </button>
+    </div>
+    <div class="hint">Enter برای ارسال • Shift+Enter برای خط جدید</div>
+  </footer>
+</div>
 <script>
 const API_KEY='freellmapi-5844744d1b29b5e5141f4416bbb7e476c271fc8b2886489d';
-const chat=document.getElementById('chat'),input=document.getElementById('input'),send=document.getElementById('send'),clear=document.getElementById('clear'),empty=document.getElementById('empty');
-let history=JSON.parse(localStorage.getItem('chat_history')||'[]');
-function timeFA(){return new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})}
-function save(){localStorage.setItem('chat_history',JSON.stringify(history))}
-function scroll(){chat.parentElement.scrollTo({top:chat.parentElement.scrollHeight,behavior:'smooth'})}
-function bubble(role,text){const w=document.createElement('div');w.className='bubble '+role;const m=document.createElement('div');m.className='meta';m.innerHTML=`<span class="avatar">${role==='user'?'👤':'✨'}</span><span>${timeFA()}</span>`;const t=document.createElement('div');t.className='text';t.textContent=text;if(role==='user'){w.appendChild(t);w.appendChild(m)}else{w.appendChild(m);w.appendChild(t)}return w}
-function render(){chat.innerHTML='';if(!history.length){chat.appendChild(empty);return}history.forEach(m=>chat.appendChild(bubble(m.role==='assistant'?'ai':m.role,m.content)));scroll()}
-function typing(on){let el=document.getElementById('typing');if(on){if(el)return;const w=document.createElement('div');w.className='bubble ai';w.id='typing';w.innerHTML=`<div class="meta"><span class="avatar">✨</span><span>${timeFA()}</span></div><div class="text"><span class="typing"><span></span><span></span></span></div>`;chat.appendChild(w);scroll()}else{el&&el.remove()}}
-async function sendMsg(){const text=input.value.trim();if(!text)return;input.value='';history.push({role:'user',content:text});save();render();typing(true);try{const res=await fetch('/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+API_KEY},body:JSON.stringify({model:'auto',messages:history})});if(!res.ok)throw new Error('خطا '+res.status);const data=await res.json();const reply=data.choices?.[0]?.message?.content||'پاسخی دریافت نشد.';typing(false);typeOut(reply)}catch(e){typing(false);history.push({role:'assistant',content:'خطا در ارتباط: '+e.message});save();render()}}
-function typeOut(text){const w=bubble('ai','');const txt=w.querySelector('.text');chat.appendChild(w);let i=0;(function step(){txt.textContent=text.slice(0,i++);scroll();if(i<=text.length)setTimeout(step,14);else{history.push({role:'assistant',content:text});save()}})()}
-send.onclick=sendMsg;input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}};clear.onclick=()=>{history=[];save();render();input.focus()};
-render();
+const bubbles=document.getElementById('bubbles');
+const input=document.getElementById('input');
+const sendBtn=document.getElementById('sendBtn');
+const empty=document.getElementById('empty');
+const clearBtn=document.getElementById('clearBtn');
+const wrap=document.getElementById('wrap');
+let messages=JSON.parse(localStorage.getItem('chat_history')||'[]');
+let sending=false;
+
+function faTime(d=new Date()){return d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})}
+function save(){localStorage.setItem('chat_history',JSON.stringify(messages))}
+function scroll(){document.getElementById('chat').scrollTop=document.getElementById('chat').scrollHeight}
+function render(){
+  bubbles.innerHTML='';
+  empty.style.display=messages.length?'none':'grid';
+  messages.forEach(m=>addBubble(m.role,m.text,m.time,false));
+  scroll()
+}
+function addBubble(role,text,time,animate=true){
+  const msg=document.createElement('div');
+  msg.className='msg '+(role==='user'?'user':'ai');
+  const av=document.createElement('div');
+  av.className='avatar';
+  av.textContent=role==='user'?'👤':'✨';
+  const bub=document.createElement('div');
+  bub.className='bubble';
+  const txt=document.createElement('div');
+  txt.className='text';
+  txt.textContent=text;
+  const tm=document.createElement('span');
+  tm.className='time';
+  tm.textContent=time||faTime();
+  bub.appendChild(txt);bub.appendChild(tm);
+  if(role==='user'){msg.appendChild(bub);msg.appendChild(av)}else{msg.appendChild(av);msg.appendChild(bub)}
+  if(animate) msg.style.animation='fade.3s ease';
+  bubbles.appendChild(msg);scroll();
+  return txt;
+}
+function typingBubble(){
+  const msg=document.createElement('div');
+  msg.className='msg ai';msg.id='typing';
+  msg.innerHTML=`<div class="avatar">✨</div><div class="bubble"><div class="text typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>`;
+  bubbles.appendChild(msg);scroll();
+}
+function removeTyping(){document.getElementById('typing')?.remove()}
+async function typeOut(node,full){
+  node.textContent='';
+  for(let i=0;i<full.length;i++){
+    node.textContent+=full[i];
+    if(i%3===0) await new Promise(r=>setTimeout(r,12));
+    scroll()
+  }
+}
+function autoresize(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,160)+'px'}
+input.addEventListener('input',autoresize);
+input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
+sendBtn.onclick=send;clearBtn.onclick=()=>{messages=[];save();render();input.focus()};
+
+async function send(){
+  const text=input.value.trim();if(!text||sending) return;
+  wrap.classList.remove('error');sending=true;
+  const t=faTime();messages.push({role:'user',text,time:t});save();
+  addBubble('user',text,t);input.value='';autoresize();render();
+  typingBubble();
+  try{
+    const res=await fetch('/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+API_KEY},
+      body:JSON.stringify({model:'auto',messages:messages.map(m=>({role:m.role,content:m.text}))})
+    });
+    if(!res.ok) throw new Error('خطا '+res.status);
+    const data=await res.json();
+    const reply=(data.choices?.[0]?.message?.content||'پاسخی نگرفتم.').trim();
+    removeTyping();
+    const node=addBubble('ai','',faTime());
+    await typeOut(node,reply);
+    messages.push({role:'assistant',text:reply,time:faTime()});save();
+  }catch(err){
+    removeTyping();
+    const node=addBubble('ai','',faTime());
+    await typeOut(node,'متأسفم، ارتباط برقرار نشد. دوباره تلاش کن.');
+    wrap.classList.add('error');
+  }finally{sending=false;input.focus();scroll()}
+}
+render();autoresize();
 </script>
 </body>
 </html>
