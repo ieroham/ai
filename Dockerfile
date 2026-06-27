@@ -2,7 +2,8 @@ FROM nginx:alpine
   
 COPY index.html /usr/share/nginx/html/index.html  
   
-RUN echo 'server {  
+RUN cat > /etc/nginx/conf.d/default.conf << 'EOF'  
+server {  
     listen 80;  
     server_name localhost;  
     root /usr/share/nginx/html;  
@@ -28,6 +29,7 @@ RUN echo 'server {
             return 204;  
         }  
     }  
-}' > /etc/nginx/conf.d/default.conf  
+}  
+EOF  
   
 EXPOSE 80  
