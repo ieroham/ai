@@ -13,7 +13,6 @@
       --bg: #fafbfd;
       --bg2: #f1f3f8;
       --card: #ffffff;
-      --card-hover: #f8f9fc;
       --line: #e4e7ef;
       --line-light: #f0f1f5;
       --text: #111827;
@@ -52,7 +51,6 @@
       --radius: 16px;
       --radius-lg: 20px;
       --radius-xl: 24px;
-      --radius-full: 9999px;
 
       --space-1: 4px;
       --space-2: 8px;
@@ -62,10 +60,8 @@
       --space-6: 24px;
       --space-8: 32px;
       --space-10: 40px;
-      --space-12: 48px;
 
       --header-h: 64px;
-
       --font-xs: 0.75rem;
       --font-sm: 0.8125rem;
       --font-base: 0.9375rem;
@@ -84,25 +80,21 @@
         --bg: #0c0f1a;
         --bg2: #141829;
         --card: #181c2e;
-        --card-hover: #1e2338;
         --line: #262b40;
         --line-light: #1e2235;
         --text: #eef0f6;
         --text-secondary: #b0b5c8;
         --muted: #7c829a;
         --muted-light: #555b75;
-
         --primary: #2dd4bf;
         --primary-hover: #14b8a6;
         --primary-light: #042f2e;
         --primary-lighter: #0a3d3b;
         --primary-glow: rgba(45,212,191,.12);
         --primary-glow-strong: rgba(45,212,191,.25);
-
         --secondary: #a78bfa;
         --secondary-light: #1e1545;
         --secondary-glow: rgba(167,139,250,.1);
-
         --success: #34d399;
         --success-light: #052e16;
         --warning: #fbbf24;
@@ -111,7 +103,6 @@
         --danger-light: #450a0a;
         --info: #60a5fa;
         --info-light: #172554;
-
         --shadow-xs: 0 1px 2px rgba(0,0,0,.2);
         --shadow-sm: 0 2px 8px rgba(0,0,0,.25);
         --shadow-md: 0 4px 16px rgba(0,0,0,.35);
@@ -140,7 +131,6 @@
     *:focus-visible{outline:2.5px solid var(--primary);outline-offset:2px;border-radius:var(--radius-xs)}
     button:focus-visible,input:focus-visible,textarea:focus-visible{outline-offset:3px}
 
-    /* ── پس‌زمینه ── */
     .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
     .bg-mesh{
       position:absolute;inset:0;
@@ -162,7 +152,6 @@
     }
     @media(prefers-color-scheme:dark){.bg-grain{opacity:.04}}
 
-    /* ── ساختار ── */
     .app{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
 
     /* ── هدر ── */
@@ -263,18 +252,19 @@
     }
     .chat{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:var(--space-3) 0 var(--space-6);scroll-behavior:smooth}
 
-    /* ── حالت خالی ── */
+    /* ═══════════════════════════════════════════
+       حالت خالی — طراحی کاملاً جدید
+       ═══════════════════════════════════════════ */
     .empty{
       min-height:100%;display:flex;flex-direction:column;
       justify-content:center;align-items:center;text-align:center;
       padding:var(--space-6) var(--space-4);
-      animation:emptyFadeIn .6s var(--transition-smooth) both;
+      animation:emptyIn .7s cubic-bezier(.16,1,.3,1) both;
     }
-    @keyframes emptyFadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+    @keyframes emptyIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 
-    .empty-hero{max-width:460px;width:100%;margin-bottom:var(--space-8)}
     .empty-icon{
-      width:68px;height:68px;border-radius:var(--radius-lg);
+      width:64px;height:64px;border-radius:var(--radius-lg);
       background:linear-gradient(135deg,var(--primary-light),var(--secondary-light));
       display:grid;place-items:center;margin:0 auto var(--space-5);
       color:var(--primary);position:relative;
@@ -288,39 +278,34 @@
       z-index:-1;animation:iconGlow 3s ease-in-out infinite alternate;
     }
     @keyframes iconGlow{0%{opacity:.5;transform:scale(1)}100%{opacity:1;transform:scale(1.1)}}
-    .empty-hero h2{font-size:var(--font-2xl);font-weight:800;margin-bottom:var(--space-2);letter-spacing:-.3px}
-    .empty-hero p{color:var(--muted);font-size:var(--font-sm);line-height:2}
 
-    /* ── پیشنهادات ── */
-    .suggestions{max-width:560px;width:100%}
-    .sug-group{margin-bottom:var(--space-4)}
-    .sug-group:last-child{margin-bottom:0}
-    .sug-group-title{
-      font-size:var(--font-xs);font-weight:700;color:var(--muted-light);
-      text-transform:uppercase;letter-spacing:.5px;
-      margin-bottom:var(--space-2);padding-right:var(--space-1);
-      display:flex;align-items:center;gap:var(--space-2);
+    .empty h2{font-size:var(--font-2xl);font-weight:800;margin-bottom:var(--space-2);letter-spacing:-.3px}
+    .empty p{color:var(--muted);font-size:var(--font-sm);line-height:2;max-width:360px;margin:0 auto var(--space-8)}
+
+    /* پیشنهادات — لیست مسطح بدون دسته‌بندی */
+    .quick-pills{
+      display:flex;flex-wrap:wrap;justify-content:center;gap:var(--space-2);
+      max-width:520px;
     }
-    .sug-group-title svg{flex:0 0 14px;color:var(--muted-light)}
-    .sug-list{display:flex;flex-wrap:wrap;gap:var(--space-2)}
-    .sug-btn{
+    .pill{
       background:var(--card);border:1px solid var(--line);color:var(--text-secondary);
-      padding:var(--space-3) var(--space-4);border-radius:var(--radius);
+      padding:var(--space-3) var(--space-4);border-radius:var(--radius-full);
       font-family:inherit;font-size:var(--font-sm);cursor:pointer;
       transition:all var(--transition-base);position:relative;overflow:hidden;
+      white-space:nowrap;
     }
-    .sug-btn::before{
+    .pill::before{
       content:'';position:absolute;inset:0;
       background:linear-gradient(135deg,var(--primary-light),transparent);
       opacity:0;transition:opacity var(--transition-base);
     }
-    .sug-btn:hover::before{opacity:1}
-    .sug-btn:hover{
+    .pill:hover::before{opacity:1}
+    .pill:hover{
       border-color:var(--primary);color:var(--primary);
       transform:translateY(-2px);box-shadow:var(--shadow-md);
     }
-    .sug-btn:active{transform:translateY(0) scale(.97)}
-    .sug-btn span{position:relative;z-index:1}
+    .pill:active{transform:translateY(0) scale(.97)}
+    .pill span{position:relative;z-index:1}
 
     /* ── پیام‌ها ── */
     .msg{
@@ -452,10 +437,7 @@
     .send:hover{box-shadow:0 6px 24px var(--primary-glow-strong);transform:translateY(-2px) scale(1.03)}
     .send:active{transform:scale(.92)}
     .send:disabled{opacity:.3;cursor:not-allowed;transform:none!important;box-shadow:none}
-    .send.stop{
-      background:linear-gradient(135deg,#f87171,#ef4444);
-      box-shadow:0 3px 12px rgba(239,68,68,.25);
-    }
+    .send.stop{background:linear-gradient(135deg,#f87171,#ef4444);box-shadow:0 3px 12px rgba(239,68,68,.25)}
     .send.stop:hover{box-shadow:0 6px 20px rgba(239,68,68,.35)}
 
     .hint{
@@ -506,10 +488,7 @@
       text-align:center;animation:modalIn .35s cubic-bezier(.16,1,.3,1);
     }
     @keyframes modalIn{from{opacity:0;transform:scale(.92) translateY(16px)}}
-    .modal-icon{
-      width:56px;height:56px;border-radius:var(--radius);margin:0 auto var(--space-4);
-      display:grid;place-items:center;
-    }
+    .modal-icon{width:56px;height:56px;border-radius:var(--radius);margin:0 auto var(--space-4);display:grid;place-items:center}
     .modal-icon.danger{background:var(--danger-light);color:var(--danger)}
     .modal h3{font-size:var(--font-xl);font-weight:800;margin-bottom:var(--space-2)}
     .modal p{color:var(--muted);font-size:var(--font-sm);line-height:1.9;margin-bottom:var(--space-6)}
@@ -543,34 +522,21 @@
     .step-dot.active{background:var(--primary);width:24px;border-radius:4px}
     .step-dot.done{background:var(--primary);opacity:.5}
     .onb-step{display:none;text-align:center}
-    .onb-step.active{display:block;animation:stepFadeIn .4s ease both}
-    @keyframes stepFadeIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
-    .onb-icon{
-      width:72px;height:72px;border-radius:var(--radius-xl);
-      margin:0 auto var(--space-5);display:grid;place-items:center;font-size:32px;
-    }
+    .onb-step.active{display:block;animation:stepIn .4s ease both}
+    @keyframes stepIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+    .onb-icon{width:72px;height:72px;border-radius:var(--radius-xl);margin:0 auto var(--space-5);display:grid;place-items:center;font-size:32px}
     .onb-icon.i1{background:linear-gradient(135deg,var(--primary-light),var(--primary-lighter));color:var(--primary)}
     .onb-icon.i2{background:linear-gradient(135deg,var(--secondary-light),#ede9fe);color:var(--secondary)}
     .onb-icon.i3{background:linear-gradient(135deg,var(--info-light),#dbeafe);color:var(--info)}
     .onb-step h2{font-size:var(--font-xl);font-weight:800;margin-bottom:var(--space-3)}
     .onb-step p{color:var(--muted);font-size:var(--font-sm);line-height:2;margin-bottom:var(--space-4)}
     .onb-step ul{list-style:none;text-align:right;margin-bottom:var(--space-4)}
-    .onb-step ul li{
-      display:flex;align-items:center;gap:var(--space-3);
-      padding:var(--space-2) 0;color:var(--text-secondary);font-size:var(--font-sm);
-    }
+    .onb-step ul li{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) 0;color:var(--text-secondary);font-size:var(--font-sm)}
     .onb-step ul li svg{flex:0 0 20px;color:var(--primary)}
     .onb-nav{display:flex;justify-content:space-between;align-items:center;margin-top:var(--space-6)}
-    .onb-nav .skip{
-      background:none;border:none;color:var(--muted);font-size:var(--font-sm);cursor:pointer;
-      padding:var(--space-2) var(--space-3);border-radius:var(--radius-xs);transition:all var(--transition-fast);
-    }
+    .onb-nav .skip{background:none;border:none;color:var(--muted);font-size:var(--font-sm);cursor:pointer;padding:var(--space-2) var(--space-3);border-radius:var(--radius-xs);transition:all var(--transition-fast)}
     .onb-nav .skip:hover{color:var(--text);background:var(--bg2)}
-    .onb-nav .next{
-      background:var(--primary);color:#fff;border:none;
-      padding:var(--space-3) var(--space-6);border-radius:var(--radius-sm);
-      font-size:var(--font-sm);font-weight:600;cursor:pointer;transition:all var(--transition-fast);
-    }
+    .onb-nav .next{background:var(--primary);color:#fff;border:none;padding:var(--space-3) var(--space-6);border-radius:var(--radius-sm);font-size:var(--font-sm);font-weight:600;cursor:pointer;transition:all var(--transition-fast)}
     .onb-nav .next:hover{background:var(--primary-hover)}
 
     /* ── واکنش‌گرا ── */
@@ -581,20 +547,16 @@
       .composer{border-radius:var(--radius);padding:var(--space-2) var(--space-2) var(--space-2) var(--space-3)}
       .send{width:38px;height:38px;border-radius:var(--radius-xs)}
       textarea{min-height:38px;max-height:120px;font-size:var(--font-sm);padding:var(--space-2) 0}
-      .sug-btn{padding:var(--space-2) var(--space-3);font-size:var(--font-xs)}
+      .pill{padding:var(--space-2) var(--space-3);font-size:var(--font-xs)}
       .msg-actions{opacity:1;transform:none}
       .onboarding{padding:var(--space-6) var(--space-4) var(--space-5)}
       .hint .shortcuts{display:none}
       footer{padding-bottom:calc(var(--space-4) + env(safe-area-inset-bottom,0px))}
     }
-    @supports(padding-bottom:env(safe-area-inset-bottom)){
-      footer{padding-bottom:calc(var(--space-4) + env(safe-area-inset-bottom))}
-    }
+    @supports(padding-bottom:env(safe-area-inset-bottom)){footer{padding-bottom:calc(var(--space-4) + env(safe-area-inset-bottom))}}
 
     @media(prefers-reduced-motion:reduce){
-      *,*::before,*::after{
-        animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;
-      }
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
       .msg{opacity:1;transform:none}
       .typing-dots span{animation:none;opacity:.45}
       .empty{animation:none}
@@ -604,10 +566,7 @@
       .status-dot::after{animation:none}
     }
 
-    .sr-only{
-      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
-      overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
-    }
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   </style>
 </head>
 <body>
@@ -763,9 +722,9 @@
     const onbSkip=document.getElementById('onbSkip');
     const onbNext=document.getElementById('onbNext');
 
-    const STORAGE_KEY='hooshiyar_chat_v2';
-    const ONB_KEY='hooshiyar_onb_done';
-    const NOTICE_KEY='hooshiyar_notice_dismissed';
+    const STORAGE_KEY='hooshiyar_chat_v3';
+    const ONB_KEY='hooshiyar_onb_v2';
+    const NOTICE_KEY='hooshiyar_notice_v2';
     const API_URL='/v1/chat/completions';
     const API_KEY='freellmapi-5844744d1b29b5e5141f4416bbb7e476c271fc8b2886489d';
 
@@ -789,7 +748,7 @@
       setTimeout(()=>{t.classList.add('out');t.addEventListener('animationend',()=>t.remove())},2500);
     }
 
-    settingsBtn.addEventListener('click',e=>{e.stopPropagation();const open=settingsDrop.classList.toggle('open');settingsBtn.setAttribute('aria-expanded',open)});
+    settingsBtn.addEventListener('click',e=>{e.stopPropagation();const o=settingsDrop.classList.toggle('open');settingsBtn.setAttribute('aria-expanded',o)});
     document.addEventListener('click',e=>{if(!settingsDrop.contains(e.target)&&e.target!==settingsBtn){settingsDrop.classList.remove('open');settingsBtn.setAttribute('aria-expanded','false')}});
 
     if(localStorage.getItem(NOTICE_KEY))aiNotice.classList.add('hidden');
@@ -813,7 +772,7 @@
       messages.forEach(m=>{txt+=(m.role==='user'?'شما':'هوشیار')+':\n'+m.content+'\n\n'});
       const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
       const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='hooshiyar-chat.txt';a.click();URL.revokeObjectURL(a.href);
-      toast('فایل گفتگو دانلود شد');
+      toast('فایل گفتجو دانلود شد');
     }
 
     function showClearModal(){settingsDrop.classList.remove('open');if(!messages.length){toast('گفتگو خالی است','error');return}clearModal.classList.add('active');clearCancel.focus()}
@@ -831,43 +790,34 @@
       try{await navigator.clipboard.writeText(text);btn.classList.add('copied');btn.innerHTML=CHECK_SVG+' کپی شد';toast('متن کپی شد');setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML=COPY_SVG+' کپی'},1800)}catch{toast('خطا در کپی','error')}
     }
 
-    const SUGGESTIONS=[
-      {cat:'نوشتن',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',items:[
-        {t:'یک ایمیل رسمی به رئیس بنویس',l:'ایمیل رسمی'},
-        {t:'داستان کوتاه فضایی بنویس',l:'داستان فضایی'},
-      ]},
-      {cat:'یادگیری',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',items:[
-        {t:'برنامه‌نویسی پایتون را ساده آموزش بده',l:'آموزش پایتون'},
-        {t:'چگونه زبان انگلیسی یاد بگیرم؟',l:'یادگیری زبان'},
-      ]},
-      {cat:'خلاقیت',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',items:[
-        {t:'۵ ایده خلاقانه برای پروژه دانشجویی',l:'ایده‌های پروژه'},
-        {t:'یک شعر زیبا درباره بهار بنویس',l:'شعر بهار'},
-      ]},
+    /* ═══ پیشنهادات — لیست مسطح، بدون دسته‌بندی ═══ */
+    const PILLS=[
+      'یک ایمیل رسمی بنویس',
+      'داستان کوتاه فضایی بنویس',
+      'آموزش ساده پایتون',
+      'چطور زبان انگلیسی یاد بگیرم؟',
+      '۵ ایده خلاقانه پروژه',
+      'شعر زیبا درباره بهار',
     ];
 
     function renderEmpty(){
       chatEl.innerHTML='';
-      let sugHTML='';
-      SUGGESTIONS.forEach(g=>{
-        sugHTML+=`<div class="sug-group"><div class="sug-group-title">${g.icon} ${g.cat}</div><div class="sug-list">`;
-        g.items.forEach(s=>{sugHTML+=`<button class="sug-btn" data-text="${esc(s.t)}"><span>${esc(s.l)}</span></button>`});
-        sugHTML+='</div></div>';
-      });
       chatEl.innerHTML=`
         <div class="empty" id="emptyState">
-          <div class="empty-hero">
-            <div class="empty-icon">
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2a4 4 0 0 1 4 4v2H8V6a4 4 0 0 1 4-4z"/><rect x="3" y="8" width="18" height="12" rx="3"/><circle cx="12" cy="14" r="2"/><path d="M12 16v2"/>
-              </svg>
-            </div>
-            <h2>سلام! من هوشیار هستم</h2>
-            <p>سؤال بپرسید، متنی بنویسید یا ایده‌تان را شروع کنید.<br>سریع و دقیق پاسخ می‌دهم.</p>
+          <div class="empty-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a4 4 0 0 1 4 4v2H8V6a4 4 0 0 1 4-4z"/><rect x="3" y="8" width="18" height="12" rx="3"/><circle cx="12" cy="14" r="2"/><path d="M12 16v2"/>
+            </svg>
           </div>
-          <div class="suggestions">${sugHTML}</div>
+          <h2>سلام! من هوشیار هستم</h2>
+          <p>سؤال بپرسید، متنی بنویسید یا ایده‌تان را شروع کنید.</p>
+          <div class="quick-pills">
+            ${PILLS.map(p=>`<button class="pill" data-text="${esc(p)}"><span>${esc(p)}</span></button>`).join('')}
+          </div>
         </div>`;
-      chatEl.querySelectorAll('.sug-btn').forEach(b=>{b.addEventListener('click',()=>{inputEl.value=b.dataset.text;autoResize();sendMessage()})});
+      chatEl.querySelectorAll('.pill').forEach(b=>{
+        b.addEventListener('click',()=>{inputEl.value=b.dataset.text;autoResize();sendMessage()})
+      });
     }
 
     const AVATAR_SVG='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4v2H8V6a4 4 0 0 1 4-4z"/><rect x="3" y="8" width="18" height="12" rx="3"/><circle cx="12" cy="14" r="2"/><path d="M12 16v2"/></svg>';
@@ -905,7 +855,7 @@
       return w.querySelector('.bubble');
     }
 
-    function regenerateLast(oldContent){
+    function regenerateLast(){
       if(busy)return;
       const msgs=chatEl.querySelectorAll('.msg.assistant');
       if(msgs.length)msgs[msgs.length-1].remove();
