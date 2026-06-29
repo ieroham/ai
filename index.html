@@ -533,29 +533,6 @@
       border-color:var(--danger-border) !important;
       color:var(--danger) !important;
     }
-    /* شمارنده کاراکتر */
-    .char-count{
-      position:absolute;bottom:var(--space-1);left:var(--space-4);
-      font-size:10px;color:var(--muted-light);pointer-events:none;
-      opacity:0;transition:opacity var(--transition-fast);
-    }
-    .char-count.visible{opacity:1}
-    .char-count.warn{color:var(--warning)}
-    .char-count.danger{color:var(--danger)}
-    /* انیمیشن ورود پیشنهادات */
-    .sug-group{animation:sugGroupIn .5s cubic-bezier(.16,1,.3,1) both}
-    .sug-group:nth-child(2){animation-delay:.08s}
-    .sug-group:nth-child(3){animation-delay:.16s}
-    @keyframes sugGroupIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-    /* Ripple روی دکمه ارسال */
-    .ripple{
-      position:absolute;border-radius:50%;background:rgba(255,255,255,.3);
-      transform:scale(0);animation:rippleAnim .5s ease-out forwards;pointer-events:none;
-    }
-    @keyframes rippleAnim{to{transform:scale(3);opacity:0}}
-    /* حالت لودینگ شکیل‌تر */
-    .typing-wrap{animation:typingFadeIn .3s ease both}
-    @keyframes typingFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
     @media(max-width:640px){
       :root{--header-h:56px}
       .brand-text .sub{display:none}
@@ -653,20 +630,17 @@
     </main>
 
     <footer>
-      <div style="position:relative;max-width:820px;margin:0 auto">
-        <form class="composer" id="composerForm" autocomplete="off">
-          <textarea id="input" rows="1" placeholder="سؤالتان را بنویسید..." autofocus aria-label="متن پیام"></textarea>
-          <button class="send" id="sendBtn" type="submit" title="ارسال" aria-label="ارسال پیام">
-            <svg id="sendIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(180deg)">
-              <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
-            </svg>
-            <svg id="stopIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none">
-              <rect x="6" y="6" width="12" height="12" rx="3"/>
-            </svg>
-          </button>
-        </form>
-        <span class="char-count" id="charCount">0</span>
-      </div>
+      <form class="composer" id="composerForm" autocomplete="off">
+        <textarea id="input" rows="1" placeholder="سؤالتان را بنویسید..." autofocus aria-label="متن پیام"></textarea>
+        <button class="send" id="sendBtn" type="submit" title="ارسال" aria-label="ارسال پیام">
+          <svg id="sendIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(180deg)">
+            <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+          </svg>
+          <svg id="stopIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none">
+            <rect x="6" y="6" width="12" height="12" rx="3"/>
+          </svg>
+        </button>
+      </form>
       <div class="hint">
         <span class="shortcuts"><kbd>Enter</kbd> ارسال · <kbd>Shift+Enter</kbd> خط جدید</span>
         <span id="statusHint">آماده</span>
@@ -747,7 +721,6 @@
     var onbSkip      = document.getElementById('onbSkip');
     var onbNext      = document.getElementById('onbNext');
     var composerForm = document.getElementById('composerForm');
-    var charCount    = document.getElementById('charCount');
 
     /* ======== ثابت‌ها ======== */
     var STORAGE_KEY = 'hooshiyar_chat_v2';
@@ -755,7 +728,6 @@
     var NOTICE_KEY  = 'hooshiyar_notice_dismissed';
     var API_URL     = '/v1/chat/completions';
     var API_KEY     = 'freellmapi-5844744d1b29b5e5141f4416bbb7e476c271fc8b2886489d';
-    var MAX_CHARS   = 4000;
 
     /* ======== وضعیت ======== */
     var messages     = [];
@@ -790,12 +762,7 @@
       try { var r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : []; } catch(e) { return []; }
     }
     function scrollBot() {
-      requestAnimationFrame(function() {
-        chatEl.scrollTo({ top: chatEl.scrollHeight, behavior: 'smooth' });
-      });
-    }
-    function scrollBotInstant() {
-      chatEl.scrollTop = chatEl.scrollHeight;
+      requestAnimationFrame(function() { chatEl.scrollTop = chatEl.scrollHeight; });
     }
     function setStatus(t, ok) {
       statusLabel.textContent = t;
@@ -825,13 +792,6 @@
     function autoResize() {
       inputEl.style.height = 'auto';
       inputEl.style.height = Math.min(inputEl.scrollHeight, 150) + 'px';
-    }
-    function updateCharCount() {
-      var len = inputEl.value.length;
-      charCount.textContent = len;
-      charCount.classList.toggle('visible', len > 0);
-      charCount.classList.toggle('warn', len > MAX_CHARS * 0.8);
-      charCount.classList.toggle('danger', len > MAX_CHARS);
     }
     function announce(t) {
       srLive.textContent = '';
@@ -896,9 +856,9 @@
     function exportChat() {
       settingsDrop.classList.remove('open');
       if (!messages.length) { toast('گفتگویی برای خروجی وجود ندارد', 'error'); return; }
-      var txt = 'گفتگوی هوشیار - ' + todayFa() + '\n' + '═'.repeat(40) + '\n\n';
+      var txt = '\u06AF\u0641\u062A\u06AF\u0648\u06CC \u0647\u0648\u0634\u06CC\u0627\u0631 - ' + todayFa() + '\n' + '\u2550'.repeat(40) + '\n\n';
       messages.forEach(function(m) {
-        txt += (m.role === 'user' ? 'شما' : 'هوشیار') + ':\n' + m.content + '\n\n';
+        txt += (m.role === 'user' ? '\u0634\u0645\u0627' : '\u0647\u0648\u0634\u06CC\u0627\u0631') + ':\n' + m.content + '\n\n';
       });
       var blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
       var a = document.createElement('a');
@@ -930,7 +890,7 @@
     clearModal.addEventListener('click', function(e) { if (e.target === clearModal) clearModal.classList.remove('active'); });
 
     document.getElementById('exportBtn').addEventListener('click', exportChat);
-    document.getElementById('helpBtn').addEventListener('click', function() { settingsDrop.classList.remove('open'); showOnboarding(); });
+    document.getElementById('helpBtn').addEventListener('click', showOnboarding);
     document.getElementById('clearBtn').addEventListener('click', showClearModal);
 
     /* ======== Escape ======== */
@@ -973,118 +933,6 @@
       }
     }
 
-    /* ======== اکشن‌های پیام ======== */
-    function makeActions(idx) {
-      var div = document.createElement('div');
-      div.className = 'msg-actions';
-
-      /* کپی */
-      var copyBtn = document.createElement('button');
-      copyBtn.className = 'msg-action';
-      copyBtn.title = 'کپی متن';
-      copyBtn.innerHTML = COPY_SVG + ' کپی';
-      copyBtn.addEventListener('click', function() {
-        copyText(messages[idx].content, copyBtn);
-      });
-      div.appendChild(copyBtn);
-
-      /* لایک */
-      var likeBtn = document.createElement('button');
-      likeBtn.className = 'msg-action';
-      likeBtn.title = 'مفید بود';
-      likeBtn.innerHTML = LIKE_SVG;
-      likeBtn.addEventListener('click', function() {
-        var isLiked = likeBtn.classList.toggle('liked');
-        if (isLiked) {
-          /* حذف دیسلایک اگر وجود دارد */
-          var dl = div.querySelector('.disliked');
-          if (dl) { dl.classList.remove('disliked'); }
-          toast('بازخورد ثبت شد');
-        }
-      });
-      div.appendChild(likeBtn);
-
-      /* دیسلایک */
-      var dislikeBtn = document.createElement('button');
-      dislikeBtn.className = 'msg-action';
-      dislikeBtn.title = 'مفید نبود';
-      dislikeBtn.innerHTML = DISLIKE_SVG;
-      dislikeBtn.addEventListener('click', function() {
-        var isDisliked = dislikeBtn.classList.toggle('disliked');
-        if (isDisliked) {
-          var lk = div.querySelector('.liked');
-          if (lk) { lk.classList.remove('liked'); }
-          toast('بازخورد ثبت شد');
-        }
-      });
-      div.appendChild(dislikeBtn);
-
-      /* بازتولید */
-      var regenBtn = document.createElement('button');
-      regenBtn.className = 'msg-action';
-      regenBtn.title = 'بازتولید پاسخ';
-      regenBtn.innerHTML = REGEN_SVG;
-      regenBtn.addEventListener('click', function() {
-        if (busy) return;
-        /* حذف پیام دستیار و همه پیام‌های بعدی */
-        messages.splice(idx);
-        save();
-        renderMessages();
-        /* ارسال مجدد آخرین پیام کاربر */
-        var lastUser = null;
-        for (var i = idx - 1; i >= 0; i--) {
-          if (messages[i].role === 'user') { lastUser = messages[i].content; break; }
-        }
-        if (lastUser) {
-          inputEl.value = lastUser;
-          sendMessage(true);
-        }
-      });
-      div.appendChild(regenBtn);
-
-      return div;
-    }
-
-    /* ======== ساخت پیام در DOM ======== */
-    function addMsgToDOM(msg, idx, animate) {
-      var wrap = document.createElement('div');
-      wrap.className = 'msg ' + msg.role + (animate ? '' : ' no-anim');
-      wrap.setAttribute('data-idx', idx);
-
-      if (msg.role === 'assistant') {
-        var av = document.createElement('div');
-        av.className = 'avatar';
-        av.innerHTML = AVATAR_SVG;
-        av.setAttribute('aria-hidden', 'true');
-        wrap.appendChild(av);
-      }
-
-      var bw = document.createElement('div');
-      bw.className = 'bubbleWrap';
-
-      var bub = document.createElement('div');
-      bub.className = 'bubble';
-      if (msg.error) bub.classList.add('error-bubble');
-      bub.textContent = msg.content;
-      bw.appendChild(bub);
-
-      /* متا */
-      if (msg.time) {
-        var meta = document.createElement('div');
-        meta.className = 'meta';
-        meta.textContent = msg.time;
-        bw.appendChild(meta);
-      }
-
-      /* اکشن‌ها فقط برای دستیار */
-      if (msg.role === 'assistant' && !msg.error) {
-        bw.appendChild(makeActions(idx));
-      }
-
-      wrap.appendChild(bw);
-      return wrap;
-    }
-
     /* ======== پیشنهادات ======== */
     var SUGGESTIONS = [
       { cat: 'نوشتن', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
@@ -1125,7 +973,7 @@
         + '<div class="suggestions">' + sugHTML + '</div>'
         + '</div>';
       chatEl.querySelectorAll('.sug-btn').forEach(function(b) {
-        b.addEventListener('click', function() { inputEl.value = b.dataset.text; autoResize(); updateCharCount(); sendMessage(); });
+        b.addEventListener('click', function() { inputEl.value = b.dataset.text; autoResize(); sendMessage(); });
       });
     }
 
@@ -1137,329 +985,246 @@
       chatEl.appendChild(s);
     }
 
+    /* ======== اکشن‌های پیام ======== */
+    function makeActions(idx) {
+      var div = document.createElement('div');
+      div.className = 'msg-actions';
+
+      var likeBtn = document.createElement('button');
+      likeBtn.className = 'msg-action'; likeBtn.title = 'مفید بود';
+      likeBtn.innerHTML = LIKE_SVG;
+      likeBtn.addEventListener('click', function() {
+        likeBtn.classList.toggle('liked');
+        if (likeBtn.classList.contains('liked')) { dislikeBtn.classList.remove('disliked'); toast('بازخورد ثبت شد'); }
+      });
+
+      var dislikeBtn = document.createElement('button');
+      dislikeBtn.className = 'msg-action'; dislikeBtn.title = 'مفید نبود';
+      dislikeBtn.innerHTML = DISLIKE_SVG;
+      dislikeBtn.addEventListener('click', function() {
+        dislikeBtn.classList.toggle('disliked');
+        if (dislikeBtn.classList.contains('disliked')) { likeBtn.classList.remove('liked'); toast('بازخورد ثبت شد'); }
+      });
+
+      var copyBtn = document.createElement('button');
+      copyBtn.className = 'msg-action';
+      copyBtn.innerHTML = COPY_SVG + ' کپی';
+      copyBtn.addEventListener('click', function() {
+        copyText((messages[idx] && messages[idx].content) || '', copyBtn);
+      });
+
+      var regenBtn = document.createElement('button');
+      regenBtn.className = 'msg-action'; regenBtn.title = 'تولید مجدد';
+      regenBtn.innerHTML = REGEN_SVG;
+      regenBtn.addEventListener('click', function() { if (!busy) regenerate(idx); });
+
+      div.appendChild(likeBtn);
+      div.appendChild(dislikeBtn);
+      div.appendChild(copyBtn);
+      div.appendChild(regenBtn);
+      return div;
+    }
+
+    /* ======== افزودن پیام ======== */
+    function appendMsg(role, content, ts, anim, msgIndex) {
+      if (anim === undefined) anim = true;
+      ts = ts || nowFa();
+      var w = document.createElement('div');
+      w.className = 'msg ' + role + (anim ? '' : ' no-anim');
+
+      if (role === 'assistant') {
+        var av = document.createElement('div'); av.className = 'avatar'; av.innerHTML = AVATAR_SVG;
+        var wrap = document.createElement('div'); wrap.className = 'bubbleWrap';
+        var bbl = document.createElement('div'); bbl.className = 'bubble'; bbl.setAttribute('dir','auto'); bbl.textContent = content;
+        var meta = document.createElement('div'); meta.className = 'meta'; meta.textContent = '\u0647\u0648\u0634\u06CC\u0627\u0631 \u00B7 ' + ts;
+        wrap.appendChild(bbl);
+        if (typeof msgIndex === 'number') wrap.appendChild(makeActions(msgIndex));
+        wrap.appendChild(meta);
+        w.appendChild(av); w.appendChild(wrap);
+      } else {
+        var wrap2 = document.createElement('div'); wrap2.className = 'bubbleWrap';
+        var bbl2 = document.createElement('div'); bbl2.className = 'bubble'; bbl2.setAttribute('dir','auto'); bbl2.textContent = content;
+        var meta2 = document.createElement('div'); meta2.className = 'meta'; meta2.textContent = ts + ' \u00B7 \u0634\u0645\u0627';
+        wrap2.appendChild(bbl2); wrap2.appendChild(meta2);
+        w.appendChild(wrap2);
+      }
+      chatEl.appendChild(w);
+      scrollBot();
+      return w;
+    }
+
     /* ======== نشانگر تایپ ======== */
     function showTyping() {
       if (typingNode) return;
-      var wrap = document.createElement('div');
-      wrap.className = 'msg assistant no-anim';
-
-      var av = document.createElement('div');
-      av.className = 'avatar';
-      av.innerHTML = AVATAR_SVG;
-      av.setAttribute('aria-hidden', 'true');
-      wrap.appendChild(av);
-
-      var bw = document.createElement('div');
-      bw.className = 'bubbleWrap';
-
-      var tw = document.createElement('div');
-      tw.className = 'typing-wrap';
-      tw.innerHTML = '<span class="typing-label">در حال نوشتن</span><span class="typing-dots"><span></span><span></span><span></span></span>';
-      bw.appendChild(tw);
-
-      wrap.appendChild(bw);
-      chatEl.appendChild(wrap);
-      typingNode = wrap;
-      scrollBotInstant();
+      var w = document.createElement('div'); w.className = 'msg assistant no-anim';
+      var av = document.createElement('div'); av.className = 'avatar'; av.innerHTML = AVATAR_SVG;
+      var wrap = document.createElement('div'); wrap.className = 'bubbleWrap';
+      var bbl = document.createElement('div'); bbl.className = 'bubble';
+      bbl.innerHTML = '<div class="typing-wrap"><span class="typing-dots"><span></span><span></span><span></span></span><span class="typing-label">\u062F\u0631 \u062D\u0627\u0644 \u0641\u06A9\u0631 \u06A9\u0631\u062F\u0646...</span></div>';
+      wrap.appendChild(bbl); w.appendChild(av); w.appendChild(wrap);
+      chatEl.appendChild(w); typingNode = w; scrollBot();
     }
-    function hideTyping() {
-      if (typingNode) { typingNode.remove(); typingNode = null; }
-    }
+    function hideTyping() { if (typingNode) { typingNode.remove(); typingNode = null; } }
 
-    /* ======== رندر همه پیام‌ها ======== */
-    var lastRenderedDate = '';
-    function renderMessages() {
+    /* ======== رندر تاریخچه ======== */
+    function renderHistory() {
       chatEl.innerHTML = '';
-      lastRenderedDate = '';
       if (!messages.length) { renderEmpty(); return; }
-
-      var today = todayFa();
-      messages.forEach(function(m, i) {
-        /* جداکننده تاریخ */
-        if (m.date && m.date !== lastRenderedDate) {
-          lastRenderedDate = m.date;
-          var sep = document.createElement('div');
-          sep.className = 'date-sep';
-          sep.textContent = m.date === today ? 'امروز' : m.date;
-          chatEl.appendChild(sep);
-        }
-        var el = addMsgToDOM(m, i, false);
-        chatEl.appendChild(el);
-      });
-      scrollBotInstant();
+      addDateSep();
+      messages.forEach(function(m, i) { appendMsg(m.role, m.content, m.ts, false, i); });
+      scrollBot();
     }
 
-    /* ======== ارسال پیام ======== */
-    function sendMessage(isRegen) {
-      var text = inputEl.value.trim();
-      if (!text || busy) return;
-      if (text.length > MAX_CHARS) {
-        toast('متن بیش از حد طولانی است', 'error');
-        return;
-      }
-
-      /* پاک‌سازی حالت خالی */
-      var emptyEl = document.getElementById('emptyState');
-      if (emptyEl) emptyEl.remove();
-
-      /* جداکننده تاریخ اگر اولین پیام است */
-      if (!messages.length) {
-        addDateSep();
-      }
-
-      /* ساخت پیام کاربر */
-      var userMsg = {
-        role: 'user',
-        content: text,
-        time: nowFa(),
-        date: todayFa()
-      };
-      messages.push(userMsg);
-      save();
-
-      var userEl = addMsgToDOM(userMsg, messages.length - 1, true);
-      chatEl.appendChild(userEl);
-      scrollBot();
-
-      /* پاک‌سازی ورودی */
-      inputEl.value = '';
-      autoResize();
-      updateCharCount();
-
-      /* شروع تولید */
-      setBusy(true);
-      showTyping();
-      announce('در حال پاسخ‌دهی');
-
-      /* فراخوانی API */
+    /* ======== تولید مجدد ======== */
+    function regenerate(idx) {
+      if (idx < 0 || idx >= messages.length || messages[idx].role !== 'assistant') return;
+      messages.splice(idx, 1); save();
+      var nodes = chatEl.querySelectorAll('.msg');
+      for (var i = idx; i < nodes.length; i++) nodes[i].remove();
       callAPI();
     }
 
-    /* ======== فراخوانی API با استریم ======== */
-    async function callAPI() {
-      abortCtrl = new AbortController();
+    /* ======== فرم ارسال ======== */
+    composerForm.addEventListener('submit', function(e) { e.preventDefault(); sendMessage(); });
+    inputEl.addEventListener('input', autoResize);
+    inputEl.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
 
-      /* ساخت آرایه پیام‌ها برای API */
-      var apiMessages = [];
-      /* سیستم پرامپت */
-      apiMessages.push({
-        role: 'system',
-        content: 'تو هوشیار هستی، یک دستیار هوشمند فارسی. پاسخ‌هایت باید مختصر، مفید و به زبان فارسی روان باشند. از نشانه‌گذاری مارک‌داون استفاده کن.'
-      });
-      /* فقط ۲۰ پیام آخر برای جلوگیری از_overflow */
-      var recent = messages.slice(-20);
-      recent.forEach(function(m) {
-        if (m.role === 'user' || m.role === 'assistant') {
-          apiMessages.push({ role: m.role, content: m.content });
+    /* ======== دکمه توقف/ارسال ======== */
+    sendBtn.addEventListener('click', function(e) {
+      if (busy) {
+        if (abortCtrl) { abortCtrl.abort(); abortCtrl = null; }
+        setBusy(false);
+        if (streamBubble && streamText) {
+          var last = messages[messages.length - 1];
+          if (last && last.role === 'assistant') { last.content = streamText; save(); }
+          var idx = messages.length - 1;
+          var actions = makeActions(idx);
+          streamBubble.parentNode.insertBefore(actions, streamBubble.parentNode.querySelector('.meta'));
         }
-      });
+        streamBubble = null; streamText = '';
+        setStatus('متوقف شد', true);
+        announce('تولید پاسخ متوقف شد');
+      }
+    });
+
+    /* ======== ارسال پیام ======== */
+    function sendMessage() {
+      if (busy) return;
+      var text = inputEl.value.trim();
+      if (!text) return;
+      var emptyEl = document.getElementById('emptyState');
+      if (emptyEl) emptyEl.remove();
+      if (messages.length === 0) addDateSep();
+      var ts = nowFa();
+      messages.push({ role: 'user', content: text, ts: ts }); save();
+      appendMsg('user', text, ts, true);
+      inputEl.value = ''; autoResize();
+      announce('پیام شما ارسال شد');
+      callAPI();
+    }
+
+    /* ======== فراخوانی API (استریم) ======== */
+    async function callAPI() {
+      setBusy(true);
+      showTyping();
+      abortCtrl = new AbortController();
+      var apiMessages = messages.map(function(m) { return { role: m.role, content: m.content }; });
 
       try {
-        var resp = await fetch(API_URL, {
+        var response = await fetch(API_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + API_KEY
-          },
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + API_KEY },
           body: JSON.stringify({
-            model: 'deepseek-ai/DeepSeek-V3',
+            model: 'auto',
             messages: apiMessages,
-            stream: true,
-            max_tokens: 2048,
-            temperature: 0.7
+            stream: true
           }),
           signal: abortCtrl.signal
         });
 
-        if (!resp.ok) {
-          throw new Error('خطای سرور: ' + resp.status);
-        }
-
         hideTyping();
 
-        /* ایجاد حباب استریم */
-        var assMsg = {
-          role: 'assistant',
-          content: '',
-          time: '',
-          date: todayFa()
-        };
-        var assIdx = messages.length;
-        messages.push(assMsg);
+        if (!response.ok) {
+          var errorText = '';
+          try { var errData = await response.json(); errorText = (errData.error && errData.error.message) || JSON.stringify(errData); }
+          catch(e2) { errorText = '\u062E\u0637\u0627\u06CC HTTP ' + response.status + ': ' + response.statusText; }
+          throw new Error(errorText);
+        }
 
-        var assWrap = document.createElement('div');
-        assWrap.className = 'msg assistant no-anim';
-        assWrap.setAttribute('data-idx', assIdx);
-
-        var av = document.createElement('div');
-        av.className = 'avatar';
-        av.innerHTML = AVATAR_SVG;
-        av.setAttribute('aria-hidden', 'true');
-        assWrap.appendChild(av);
-
-        var bw = document.createElement('div');
-        bw.className = 'bubbleWrap';
-
-        var bub = document.createElement('div');
-        bub.className = 'bubble';
-        bw.appendChild(bub);
-        assWrap.appendChild(bw);
-        chatEl.appendChild(assWrap);
-
-        streamBubble = bub;
+        var ts = nowFa();
         streamText = '';
 
-        /* خواندن استریم */
-        var reader = resp.body.getReader();
+        var w = document.createElement('div'); w.className = 'msg assistant no-anim';
+        var av = document.createElement('div'); av.className = 'avatar'; av.innerHTML = AVATAR_SVG;
+        var wrap = document.createElement('div'); wrap.className = 'bubbleWrap';
+        streamBubble = document.createElement('div'); streamBubble.className = 'bubble'; streamBubble.setAttribute('dir','auto'); streamBubble.textContent = '';
+        wrap.appendChild(streamBubble); w.appendChild(av); w.appendChild(wrap);
+        chatEl.appendChild(w); scrollBot();
+
+        var reader  = response.body.getReader();
         var decoder = new TextDecoder();
-        var buffer = '';
+        var buffer  = '';
+        var msgIndex = messages.length;
 
         while (true) {
           var result = await reader.read();
           if (result.done) break;
-
           buffer += decoder.decode(result.value, { stream: true });
           var lines = buffer.split('\n');
-          buffer = lines.pop() || '';
-
+          buffer = lines.pop();
           for (var i = 0; i < lines.length; i++) {
             var line = lines[i].trim();
             if (!line || !line.startsWith('data:')) continue;
             var data = line.slice(5).trim();
             if (data === '[DONE]') continue;
-
             try {
               var parsed = JSON.parse(data);
-              var delta = parsed.choices && parsed.choices[0] && parsed.choices[0].delta;
-              if (delta && delta.content) {
-                streamText += delta.content;
-                streamBubble.textContent = streamText;
-                scrollBot();
-              }
-            } catch(e) {
-              /* خطای پارس - نادیده بگیر */
-            }
+              var delta = parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content;
+              if (delta) { streamText += delta; streamBubble.textContent = streamText; scrollBot(); }
+            } catch(pe) {}
           }
         }
 
-        /* پایان استریم */
-        streamBubble = null;
-        assMsg.content = streamText;
-        assMsg.time = nowFa();
-
-        /* بروزرسانی متا و اکشن‌ها */
-        var meta = document.createElement('div');
-        meta.className = 'meta';
-        meta.textContent = assMsg.time;
-        bw.appendChild(meta);
-        bw.appendChild(makeActions(assIdx));
-
-        save();
-        setBusy(false);
-        announce('پاسخ تکمیل شد');
+        if (streamText) {
+          messages.push({ role: 'assistant', content: streamText, ts: ts }); save();
+          var metaDiv = document.createElement('div'); metaDiv.className = 'meta'; metaDiv.textContent = '\u0647\u0648\u0634\u06CC\u0627\u0631 \u00B7 ' + ts;
+          wrap.appendChild(makeActions(msgIndex));
+          wrap.appendChild(metaDiv);
+          w.classList.remove('no-anim');
+          announce('پاسخ هوشیار دریافت شد');
+        }
 
       } catch(err) {
         hideTyping();
-        streamBubble = null;
-
-        if (err.name === 'AbortError') {
-          /* کاربر متوقف کرد */
-          if (streamText) {
-            /* ذخیره متن تولید‌شده تا اینجا */
-            var last = messages[messages.length - 1];
-            if (last && last.role === 'assistant') {
-              last.content = streamText;
-              last.time = nowFa();
-              save();
-            }
-            toast('تولید متوقف شد');
-          } else {
-            /* حذف پیام خالی دستیار اگر اضافه شده */
-            if (messages.length && messages[messages.length - 1].role === 'assistant' && !messages[messages.length - 1].content) {
-              messages.pop();
-              save();
-            }
-            toast('تولید متوقف شد');
-          }
-          renderMessages();
+        if (err.name === 'AbortError') return;
+        console.error('API Error:', err);
+        setStatus('\u062E\u0637\u0627 \u062F\u0631 \u0627\u062A\u0635\u0627\u0644', false);
+        var errorContent = '\u062E\u0637\u0627 \u062F\u0631 \u0627\u0631\u062A\u0628\u0627\u0637 \u0628\u0647 \u0633\u0631\u0648\u0631\n\n';
+        if (err.message.indexOf('Failed to fetch') !== -1 || err.message.indexOf('NetworkError') !== -1) {
+          errorContent += '\u0627\u0637\u0644\u0627\u0639\u0627\u062A\u06CC \u0627\u0632 \u0633\u0631\u0648\u0631 \u062F\u0631\u06CC\u0627\u0641\u062A \u0646\u0634\u062F. \u0627\u062A\u0635\u0627\u0644 \u0627\u06CC\u0646\u062A\u0631\u0646\u062A \u0631\u0627 \u0628\u0631\u0631\u0633\u06CC \u06A9\u0646\u06CC\u062F.';
         } else {
-          /* خطای واقعی */
-          var errMsg = {
-            role: 'assistant',
-            content: 'متأسفانه خطایی رخ داد. لطفاً دوباره تلاش کنید.\n\nجزئیات: ' + err.message,
-            time: nowFa(),
-            date: todayFa(),
-            error: true
-          };
-          messages.push(errMsg);
-          save();
-          var errEl = addMsgToDOM(errMsg, messages.length - 1, true);
-          chatEl.appendChild(errEl);
-          setStatus('خطا', false);
-          announce('خطا در دریافت پاسخ');
+          errorContent += err.message;
         }
+        var errTs = nowFa();
+        appendMsg('assistant', errorContent, errTs, true);
+        var errBubbles = chatEl.querySelectorAll('.msg.assistant:last-child .bubble');
+        if (errBubbles.length) errBubbles[errBubbles.length - 1].classList.add('error-bubble');
+        toast('\u062E\u0637\u0627 \u062F\u0631 \u0627\u0631\u062A\u0628\u0627\u0637', 'error');
+        announce('\u062E\u0637\u0627 \u062F\u0631 \u0627\u0631\u062A\u0628\u0627\u0637 \u0628\u0647 \u0633\u0631\u0648\u0631');
+      } finally {
         setBusy(false);
+        streamBubble = null; streamText = ''; abortCtrl = null;
       }
     }
 
-    /* ======== توقف تولید ======== */
-    sendBtn.addEventListener('click', function(e) {
-      if (busy && abortCtrl) {
-        e.preventDefault();
-        abortCtrl.abort();
-      }
-    });
-
-    /* ======== ارسال فرم ======== */
-    composerForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      if (busy) return;
-      sendMessage(false);
-    });
-
-    /* ======== تغییرات textarea ======== */
-    inputEl.addEventListener('input', function() {
-      autoResize();
-      updateCharCount();
-    });
-    inputEl.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        if (!busy) sendMessage(false);
-      }
-    });
-
-    /* ======== Ripple روی دکمه ارسال ======== */
-    sendBtn.addEventListener('mousedown', function(e) {
-      if (busy) return;
-      var rect = sendBtn.getBoundingClientRect();
-      var ripple = document.createElement('span');
-      ripple.className = 'ripple';
-      var size = Math.max(rect.width, rect.height);
-      ripple.style.width = ripple.style.height = size + 'px';
-      ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-      ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-      sendBtn.appendChild(ripple);
-      ripple.addEventListener('animationend', function() { ripple.remove(); });
-    });
-
-    /* ======== اولیه‌سازی ======== */
-    function init() {
+    /* ======== مقداردهی اولیه ======== */
+    (function init() {
       messages = load();
-      if (messages.length) {
-        renderMessages();
-      } else {
-        renderEmpty();
-      }
-      /* آنبوردینگ */
-      if (!localStorage.getItem(ONB_KEY)) {
-        setTimeout(function() { showOnboarding(); }, 600);
-      } else {
-        inputEl.focus();
-      }
-    }
-
-    init();
+      if (messages.length > 0) renderHistory(); else renderEmpty();
+      if (!localStorage.getItem(ONB_KEY)) { setTimeout(showOnboarding, 600); } else { inputEl.focus(); }
+    })();
   </script>
 </body>
 </html>
