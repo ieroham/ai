@@ -752,9 +752,7 @@
     const STORAGE_KEY='hooshiyar_chat_v2';
     const ONB_KEY='hooshiyar_onb_done';
     const NOTICE_KEY='hooshiyar_notice_dismissed';
-    
-    // آدرس کامل سرور و تنظیم مدل روی auto
-    const API_URL='https://freellmapi-production-3240.up.railway.app/v1/chat/completions';
+    const API_URL='/v1/chat/completions';
     const API_KEY='freellmapi-5844744d1b29b5e5141f4416bbb7e476c271fc8b2886489d';
 
     let messages=[];let busy=false;let typingNode=null;let abortCtrl=null;let onbStep=0;
@@ -907,30 +905,10 @@
       chatEl.appendChild(m);scrollBot();return m;
     }
 
-    async function typeOut(el,text){
-      el.textContent='';el.dir='auto';
-      const chars=[...text];const len=chars.length;
-      let base=len>500?3:len>250?5:len>120?8:12;
-      for(let i=0;i<len;i++){
-        if(abortCtrl&&abortCtrl.signal.aborted)break;
-        el.textContent+=chars[i];
-        if(i%8===0)scrollBot();
-        const ch=chars[i];let d=base;
-        if(ch==='.'||ch==='؟'||ch==='!')d=base*5;
-        else if(ch==='،'||ch=='؛'||ch===':')d=base*3;
-        else if(ch===' ')d=base*.4;
-        await new Promise(r=>setTimeout(r,d));
-      }
-      const wrap=el.closest('.bubbleWrap');
-      if(wrap){const cb=wrap.querySelector('[data-act="copy"]');if(cb)cb.dataset.copy=el.textContent}
-      scrollBot();
-    }
-
     function setSendMode(stop){
       if(stop){sendBtn.classList.add('stop');sendIcon.style.display='none';stopIcon.style.display='block';sendBtn.title='توقف';sendBtn.setAttribute('aria-label','توقف تولید')}
       else{sendBtn.classList.remove('stop');sendIcon.style.display='block';stopIcon.style.display='none';sendBtn.title='ارسال';sendBtn.setAttribute('aria-label','ارسال پیام')}
     }
-    
     function stopGen(){
       if(abortCtrl)abortCtrl.abort();
       if(typingNode)typingNode.remove();
@@ -946,100 +924,128 @@
       inputEl.value='';autoResize();doApiCall();
     }
 
-    // تابع کامل ارتباط با سرور با مدل auto
-    async function doApiCall(){
-      if(busy) return;
+    async function doApiCall() {
+      if (busy) return;
       busy = true;
-      sendBtn.disabled = false; // نگه‌داشتن دکمه فعال برای امکان توقف
+      sendBtn.disabled = true;
       setSendMode(true);
-      setStatus('در حال پاسخ‌دهی...', true);
-      
-      typingNode = showTyping();
+      setStatus('در حال پاسخ‌دهی...');
       abortCtrl = new AbortController();
+
+      typingNode = showTyping();
 
       try {
         const response = await fetch(API_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_KEY}`
+            'Authorization': 'Bearer ' + API_KEY
           },
           body: JSON.stringify({
-            model: "auto", // تنظیم مدل روی حالت خودکار
-            messages: messages.map(m => ({ role: m.role, content: m.content }))
+            model: "auto", // تنظیم مدل روی حالت خودکار طبق درخواست شما
+            messages: messages,
+            stream: true
           }),
           signal: abortCtrl.signal
         });
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
-          throw new Error(errData.error?.message || `خطای سرور: ${response.status}`);
+          throw new Error(errData.error?.message || 'خطای سرور: ' + response.status);
         }
 
-        const data = await response.json();
-        const aiText = data.choices[0]?.message?.content || 'متأسفانه پاسخی دریافت نشد.';
-
-        // حذف نشانگر تایپ
-        if(typingNode) typingNode.remove();
+        if (typingNode) typingNode.remove();
         typingNode = null;
 
-        // ذخیره پیام هوش مصنوعی
-        messages.push({ role: 'assistant', content: aiText });
+        const bubble = appendMsg('assistant', '', nowFa(), true);
+        let fullText = '';
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || !trimmed.startsWith('data: ')) continue;
+            const data = trimmed.slice(6);
+            if (data === '[DONE]') continue;
+
+            try {
+              const json = JSON.parse(data);
+              const delta = json.choices?.[0]?.delta?.content;
+              if (delta) {
+                fullText += delta;
+                bubble.textContent = fullText;
+                bubble.dir = 'auto';
+                scrollBot();
+              }
+            } catch (e) { /* نادیده گرفتن خطای پارس */ }
+          }
+        }
+
+        const wrap = bubble.closest('.bubbleWrap');
+        if (wrap) {
+          const cb = wrap.querySelector('[data-act="copy"]');
+          if (cb) cb.dataset.copy = fullText;
+        }
+
+        messages.push({ role: 'assistant', content: fullText });
         save();
 
-        // نمایش پیام و اجرای انیمیشن تایپ
-        const bubbleEl = appendMsg('assistant', aiText, nowFa(), true);
-        await typeOut(bubbleEl, aiText);
-
       } catch (error) {
-        // اگر خطا از طرف کاربر (دکمه توقف) نبود
-        if (error.name !== 'AbortError') {
-          if(typingNode) typingNode.remove();
-          typingNode = null;
-          toast('خطا در ارتباط با سرور', 'error');
-          setStatus('خطا در ارتباط', false);
-          console.error('API Error:', error);
+        if (error.name === 'AbortError') {
+          stopGen();
+          return;
         }
+        if (typingNode) typingNode.remove();
+        typingNode = null;
+        toast('خطا: ' + error.message, 'error');
+        setStatus('خطا', false);
       } finally {
         busy = false;
         sendBtn.disabled = false;
         setSendMode(false);
-        setStatus('آماده', true);
+        if (!statusDot.classList.contains('offline')) setStatus('آماده');
         inputEl.focus();
       }
     }
 
-    // ایونت‌های مربوط به فرم ارسال
-    inputEl.addEventListener('input', autoResize);
+    sendBtn.addEventListener('click', () => {
+      if (busy) { stopGen(); } else { sendMessage(); }
+    });
     
-    inputEl.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        if (!busy) sendMessage();
-      }
+    document.getElementById('composerForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      sendMessage();
     });
 
-    sendBtn.addEventListener('click', function() {
-      if (busy) {
-        stopGen();
-      } else {
+    inputEl.addEventListener('input', autoResize);
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
         sendMessage();
       }
     });
 
-    // لود کردن چت‌های قبلی و راه‌اندازی اولیه
-    window.addEventListener('DOMContentLoaded', () => {
-      const saved = load();
-      if (saved.length > 0) {
-        messages = saved;
-        addDateSep();
-        messages.forEach(m => appendMsg(m.role, m.content, null, false));
-      } else {
-        renderEmpty();
-      }
-      if (!localStorage.getItem(ONB_KEY)) showOnboarding();
-      inputEl.focus();
-    });
+    messages = load();
+    if (messages.length) {
+      messages.forEach(m => {
+        appendMsg(m.role, m.content, undefined, false);
+      });
+      scrollBot();
+    } else {
+      renderEmpty();
+    }
+
+    if (!localStorage.getItem(ONB_KEY)) showOnboarding();
   </script>
 </body>
 </html>
